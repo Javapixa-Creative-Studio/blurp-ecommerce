@@ -108,7 +108,7 @@ export function MobileHome() {
           <svg viewBox="0 0 1440 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
             <path
               d="M0 80L60 73.3C120 66.7 240 53.3 360 46.7C480 40 600 40 720 43.3C840 46.7 960 53.3 1080 56.7C1200 60 1320 60 1380 60L1440 60V80H1380C1320 80 1200 80 1080 80C960 80 840 80 720 80C600 80 480 80 360 80C240 80 120 80 60 80H0Z"
-              fill="var(--color-canvas)"
+              fill="#ffffff"
             />
           </svg>
         </div>
@@ -130,7 +130,7 @@ export function MobileHome() {
             <Link
               key={card.title}
               href={card.href}
-              className="group relative rounded-2xl overflow-hidden shrink-0 w-44 h-56 bg-surface-soft shadow-sm hover-lift"
+              className="group relative rounded-2xl overflow-hidden shrink-0 w-44 h-56 bg-surface-soft shadow-sm transition-shadow hover:shadow-md"
             >
               <SafeImage
                 src={card.image}
