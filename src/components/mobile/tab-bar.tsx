@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Search, Heart, ShoppingCart, User } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { CartBadge } from "@/src/components/shared/cart-badge";
 
 const tabs = [
   { icon: Home, label: "Home", href: "/" },
@@ -40,9 +41,12 @@ export function MobileTabBar() {
               <div className="relative">
                 <Icon className={cn("h-5 w-5", active && "stroke-[2.5]")} />
                 {tab.label === "Cart" && (
-                  <span className="absolute -top-1.5 -right-1.5 h-4 w-4 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                    2
-                  </span>
+                  <CartBadge
+                    size="xs"
+                    placement="corner"
+                    offsetClassName="-top-1.5 -right-1.5"
+                    textClassName="text-primary-foreground"
+                  />
                 )}
               </div>
               <span className={cn("text-xs mt-1", active && "font-medium")}>

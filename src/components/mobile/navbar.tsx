@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Menu, ShoppingCart, X, Search, Heart, User, Home, Grid3x3, Sparkles } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
+import { CartBadge } from "@/src/components/shared/cart-badge";
 
 interface MobileNavbarProps {
   title?: string;
@@ -39,9 +40,7 @@ export function MobileNavbar({ title }: MobileNavbarProps) {
             <Button variant="ghost" size="icon" className="relative" asChild>
               <Link href="/store/keranjang">
                 <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center">
-                  2
-                </span>
+                <CartBadge size="sm" placement="corner" offsetClassName="-top-0.5 -right-0.5" />
               </Link>
             </Button>
           </div>

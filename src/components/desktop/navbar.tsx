@@ -7,6 +7,7 @@ import { Button } from "@/src/components/ui/button";
 import { cn } from "@/src/lib/utils";
 import { SafeImage } from "@/src/components/shared/safe-image";
 import { Dialog, DialogContent, DialogTitle } from "@/src/components/ui/dialog";
+import { CartBadge } from "@/src/components/shared/cart-badge";
 
 export function DesktopNavbar() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
@@ -117,9 +118,7 @@ export function DesktopNavbar() {
       <Link href="/store/keranjang">
         <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface-soft relative">
           <ShoppingCart className="w-5 h-5 text-ink" />
-          <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-white text-xs flex items-center justify-center font-semibold leading-none">
-            2
-          </span>
+          <CartBadge size="md" placement="corner" />
         </Button>
       </Link>
       <Link href="/login">
@@ -238,9 +237,7 @@ export function DesktopNavbar() {
             <Link href="/store/keranjang">
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface-soft relative">
                 <ShoppingCart className="w-5 h-5 text-ink" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-semibold leading-none">
-                  2
-                </span>
+                <CartBadge size="sm" placement="corner" />
               </Button>
             </Link>
             <Button
@@ -371,9 +368,7 @@ export function DesktopNavbar() {
               >
                 <ShoppingCart className="w-5 h-5 text-muted" />
                 Keranjang
-                <span className="ml-auto h-5 w-5 rounded-full bg-primary text-white text-xs flex items-center justify-center font-semibold">
-                  2
-                </span>
+                <CartBadge size="md" placement="inline" className="ml-auto" />
               </Link>
               <Link
                 href="/login"
