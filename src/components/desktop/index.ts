@@ -4,3 +4,4 @@ export * from "./shell";
 export * from "./home";
 export * from "./catalog";
 export * from "./product-detail";
+export * from "./cart";

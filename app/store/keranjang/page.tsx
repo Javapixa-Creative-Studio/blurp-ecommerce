@@ -1,10 +1,11 @@
 "use client";
 
+import { useIsDesktop } from "@/src/hooks";
+import { DesktopCart } from "@/src/components/desktop";
+import { MobileCart } from "@/src/components/mobile";
+
 export default function KeranjangPage() {
-  return (
-    <div className="container mx-auto px-6 py-8">
-      <h1 className="text-2xl font-semibold mb-4">Keranjang</h1>
-      <p className="text-muted-foreground">Halaman keranjang sedang dalam pengembangan.</p>
-    </div>
-  );
+  const isDesktop = useIsDesktop();
+
+  return isDesktop ? <DesktopCart /> : <MobileCart />;
 }
