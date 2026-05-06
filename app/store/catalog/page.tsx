@@ -1,10 +1,27 @@
 "use client";
 
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { useIsDesktop } from "@/src/hooks";
+import { DesktopCatalog } from "@/src/components/desktop";
+import { MobileCatalog } from "@/src/components/mobile";
+
+function CatalogContent() {
+  const searchParams = useSearchParams();
+  const category = searchParams.get("category") || undefined;
+  const isDesktop = useIsDesktop();
+
+  return isDesktop ? (
+    <DesktopCatalog category={category} />
+  ) : (
+    <MobileCatalog category={category} />
+  );
+}
+
 export default function CatalogPage() {
   return (
-    <div className="container mx-auto px-6 py-8">
-      <h1 className="text-2xl font-semibold mb-4">Katalog</h1>
-      <p className="text-muted-foreground">Halaman katalog sedang dalam pengembangan.</p>
-    </div>
+    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+      <CatalogContent />
+    </Suspense>
   );
 }
