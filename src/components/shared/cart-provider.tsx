@@ -8,7 +8,6 @@ import React, {
   useMemo,
   useReducer,
   useRef,
-  useState,
 } from "react";
 import { products } from "@/src/data/products";
 
@@ -25,6 +24,7 @@ export type CartLine = {
 
 type CartState = {
   lines: CartLine[];
+  isHydrated: boolean;
 };
 
 type AddItemInput = {
@@ -84,7 +84,7 @@ type CartAction =
 function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case "hydrate": {
-      return { lines: action.lines };
+      return { lines: action.lines, isHydrated: true };
     }
     case "addItem": {
       const quantity = clampQuantity(action.input.quantity ?? 1);
@@ -99,28 +99,29 @@ function cartReducer(state: CartState, action: CartAction): CartState {
       const nextKey = makeLineKey(nextLine);
 
       const idx = state.lines.findIndex((l) => makeLineKey(l) === nextKey);
-      if (idx === -1) return { lines: [...state.lines, nextLine] };
+      if (idx === -1) return { ...state, lines: [...state.lines, nextLine] };
 
       const existing = state.lines[idx]!;
       const updated: CartLine = { ...existing, quantity: existing.quantity + quantity };
       const nextLines = state.lines.slice();
       nextLines[idx] = updated;
-      return { lines: nextLines };
+      return { ...state, lines: nextLines };
     }
     case "removeItem": {
-      return { lines: state.lines.filter((l) => makeLineKey(l) !== action.key) };
+      return { ...state, lines: state.lines.filter((l) => makeLineKey(l) !== action.key) };
     }
     case "setQuantity": {
       const quantity = clampQuantity(action.quantity);
       if (quantity <= 0) {
-        return { lines: state.lines.filter((l) => makeLineKey(l) !== action.key) };
+        return { ...state, lines: state.lines.filter((l) => makeLineKey(l) !== action.key) };
       }
       return {
+        ...state,
         lines: state.lines.map((l) => (makeLineKey(l) === action.key ? { ...l, quantity } : l)),
       };
     }
     case "clear": {
-      return { lines: [] };
+      return { ...state, lines: [] };
     }
     default: {
       return state;
@@ -143,23 +144,19 @@ export type CartContextValue = {
 const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(cartReducer, { lines: [] });
-  const [isHydrated, setIsHydrated] = useState(false);
-  const didHydrateRef = useRef(false);
+  const [state, dispatch] = useReducer(cartReducer, { lines: [], isHydrated: false });
 
   // Hydrate from localStorage on client only
   useEffect(() => {
     const stored = readStoredCart();
     const filtered = stored.filter((l) => productById.has(l.productId));
     dispatch({ type: "hydrate", lines: filtered });
-    setIsHydrated(true);
-    didHydrateRef.current = true;
   }, []);
 
   // Persist after hydration (avoid clobbering stored cart with empty SSR state)
   const lastPersisted = useRef<string | null>(null);
   useEffect(() => {
-    if (!didHydrateRef.current) return;
+    if (!state.isHydrated) return;
     try {
       const payload = JSON.stringify(state.lines);
       if (payload === lastPersisted.current) return;
@@ -207,7 +204,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       items: derived.items,
       count: derived.count,
       subtotal: derived.subtotal,
-      isHydrated,
+      isHydrated: state.isHydrated,
       addItem,
       removeItem,
       setQuantity,
@@ -219,9 +216,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     derived.count,
     derived.items,
     derived.subtotal,
-    isHydrated,
     removeItem,
     setQuantity,
+    state.isHydrated,
     state.lines,
   ]);
 

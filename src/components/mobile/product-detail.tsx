@@ -294,12 +294,12 @@ export function MobileProductDetail({ product }: MobileProductDetailProps) {
         </div>
       </div>
 
-      {/* Fixed Bottom Bar - Airbnb Style */}
-      <div className="fixed bottom-14 left-0 right-0 bg-white border-t border-hairline p-4 flex gap-3 z-40">
+      {/* Fixed Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-hairline px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex gap-3 z-40 shadow-[0_-8px_24px_-12px_rgba(0,0,0,0.08)]">
         <Button
           variant="outline"
           size="lg"
-          className="flex-1 rounded-lg font-semibold"
+          className="flex-1 rounded-full font-semibold border-hairline h-12"
           onClick={() => {
             addItem({
               productId: product.id,
@@ -311,7 +311,7 @@ export function MobileProductDetail({ product }: MobileProductDetailProps) {
         >
           + Keranjang
         </Button>
-        <Button size="lg" className="flex-1 rounded-lg font-semibold">
+        <Button size="lg" className="flex-1 rounded-full font-semibold h-12">
           Beli Sekarang
         </Button>
       </div>

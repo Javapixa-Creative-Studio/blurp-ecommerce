@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { SlidersHorizontal, X } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import {
   Sheet,
@@ -22,9 +21,10 @@ import {
   SelectValue,
 } from "@/src/components/ui/select";
 import { Separator } from "@/src/components/ui/separator";
-import { ProductCard } from "@/src/components/shared";
+import { ProductCard, ProductCardSkeleton } from "@/src/components/shared";
 import { products } from "@/src/data/products";
 import { categories } from "@/src/data/categories";
+import { useSimulatedLoading } from "@/src/hooks/use-simulated-loading";
 
 const sortOptions = [
   { value: "popular", label: "Terpopuler" },
@@ -45,16 +45,13 @@ export function MobileCatalog({ category }: MobileCatalogProps) {
     category ? [category] : []
   );
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const isLoading = useSimulatedLoading(700);
 
   const filteredProducts = products.filter((p) => {
     if (selectedCategories.length > 0 && !selectedCategories.includes(p.categorySlug)) {
       return false;
     }
     if (selectedSizes.length > 0 && !p.sizes.some((s) => selectedSizes.includes(s))) {
-      return false;
-    }
-    if (searchQuery && !p.name.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
     }
     return true;
@@ -76,22 +73,8 @@ export function MobileCatalog({ category }: MobileCatalogProps) {
 
   return (
     <div className="bg-background">
-      {/* Search Bar */}
-      <div className="px-4 py-3 border-b">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Cari produk..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-secondary/50 border-transparent"
-          />
-        </div>
-      </div>
-
       {/* Filter & Sort Bar */}
-      <div className="flex items-center justify-between px-4 py-3 border-b">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-hairline">
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="sm" className="gap-2">
@@ -182,7 +165,7 @@ export function MobileCatalog({ category }: MobileCatalogProps) {
 
       {/* Active Filters */}
       {activeFilterCount > 0 && (
-        <div className="px-4 py-2 flex flex-wrap gap-2 border-b">
+        <div className="px-4 py-2 flex flex-wrap gap-2 border-b border-hairline">
           {selectedCategories.map((slug) => {
             const cat = categories.find((c) => c.slug === slug);
             return (
@@ -220,7 +203,13 @@ export function MobileCatalog({ category }: MobileCatalogProps) {
 
       {/* Product Grid */}
       <div className="px-4 pb-4">
-        {filteredProducts.length > 0 ? (
+        {isLoading ? (
+          <div className="grid grid-cols-2 gap-3" aria-busy="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div className="grid grid-cols-2 gap-3">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
@@ -237,7 +226,6 @@ export function MobileCatalog({ category }: MobileCatalogProps) {
               onClick={() => {
                 setSelectedCategories([]);
                 setSelectedSizes([]);
-                setSearchQuery("");
               }}
             >
               Reset filter

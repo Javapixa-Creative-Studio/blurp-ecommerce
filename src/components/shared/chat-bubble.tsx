@@ -13,8 +13,8 @@ export function ChatBubble({ className }: ChatBubbleProps) {
     <Button
       size="icon"
       className={cn(
-        "fixed bottom-20 md:bottom-6 right-4 h-14 w-14 rounded-full shadow-lg",
-        "bg-[hsl(var(--accent))] hover:bg-[hsl(var(--accent))]/90",
+        "fixed bottom-6 right-4 h-14 w-14 rounded-full shadow-lg",
+        "bg-primary text-primary-foreground hover:bg-primary/90 ring-1 ring-black/10 shadow-xl outline outline-1 outline-white/30",
         "z-40",
         className
       )}
@@ -22,7 +22,7 @@ export function ChatBubble({ className }: ChatBubbleProps) {
         window.open("https://wa.me/6281234567890", "_blank");
       }}
     >
-      <MessageCircle className="h-6 w-6" />
+      <MessageCircle className="h-6 w-6 text-white stroke-white" />
     </Button>
   );
 }

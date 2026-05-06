@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Star, Truck, RotateCcw, Sparkles, TrendingUp, Shield } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
-import { ProductCard } from "@/src/components/shared";
+import { ProductGrid } from "@/src/components/shared";
 import { SafeImage } from "@/src/components/shared/safe-image";
 import { getFeaturedProducts, getNewProducts } from "@/src/data/products";
 import { mockImages } from "@/src/data/mock-images";
@@ -276,13 +276,12 @@ export function DesktopHome() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {featuredProducts.map((product, index) => (
-              <div key={product.id} className={`animate-fade-in stagger-${index + 1}`}>
-                <ProductCard product={product} />
-              </div>
-            ))}
-          </div>
+          <ProductGrid
+            products={featuredProducts}
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            itemClassName="animate-fade-in stagger-1"
+            skeletonCount={4}
+          />
         </div>
       </section>
 
@@ -333,21 +332,12 @@ export function DesktopHome() {
               </div>
             </Link>
 
-            <div className="lg:col-span-7 grid grid-cols-2 gap-6">
-              {newDrops.length > 0 ? (
-                newDrops.map((product, index) => (
-                  <div key={product.id} className={`animate-fade-in stagger-${index + 1}`}>
-                    <ProductCard product={product} />
-                  </div>
-                ))
-              ) : (
-                featuredProducts.slice(0, 4).map((product, index) => (
-                  <div key={product.id} className={`animate-fade-in stagger-${index + 1}`}>
-                    <ProductCard product={product} />
-                  </div>
-                ))
-              )}
-            </div>
+            <ProductGrid
+              products={newDrops.length > 0 ? newDrops : featuredProducts.slice(0, 4)}
+              className="lg:col-span-7 grid grid-cols-2 gap-6"
+              itemClassName="animate-fade-in stagger-1"
+              skeletonCount={4}
+            />
           </div>
         </div>
       </section>
@@ -499,21 +489,21 @@ export function DesktopHome() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8" />
+                <Shield className="w-8 h-8 text-white stroke-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Authentic Picks</h3>
               <p className="text-white/70">Kurasi produk yang nyaman dipakai sehari-hari.</p>
             </div>
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Truck className="w-8 h-8" />
+                <Truck className="w-8 h-8 text-white stroke-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
               <p className="text-white/70">Packing rapi, kirim cepat, tracking jelas.</p>
             </div>
             <div className="text-center p-6">
               <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <RotateCcw className="w-8 h-8" />
+                <RotateCcw className="w-8 h-8 text-white stroke-white" />
               </div>
               <h3 className="text-xl font-semibold mb-2">Easy Returns</h3>
               <p className="text-white/70">Proses cepat kalau ada yang nggak cocok.</p>

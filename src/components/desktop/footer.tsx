@@ -10,17 +10,15 @@ const footerLinks = {
     { label: "SoraStore Advisory", href: "/advisory" },
     { label: "Keamanan", href: "/security" },
   ],
-  "Hosting": [
-    { label: "Jual di SoraStore", href: "/host" },
-    { label: "Bahan Resource", href: "/resources" },
-    { label: "Komunitas", href: "/community" },
-    { label: "Mitra Terpercaya", href: "/partners" },
+  "Brand": [
+    { label: "Tentang Kami", href: "/about" },
+    { label: "Kualitas & Keamanan", href: "/security" },
+    { label: "Kontak", href: "/kontak" },
   ],
-  "SoraStore": [
-    { label: "Newsroom", href: "/newsroom" },
-    { label: "Karir", href: "/careers" },
-    { label: "Investors", href: "/investors" },
-    { label: "Gift Cards", href: "/gift-cards" },
+  "Bantuan": [
+    { label: "Pengiriman", href: "/shipping" },
+    { label: "Retur & Refund", href: "/returns" },
+    { label: "FAQ", href: "/help" },
   ],
 };
 
@@ -42,7 +40,7 @@ export function DesktopFooter() {
                   className="flex-1 rounded-full"
                 />
                 <Button size="icon" className="rounded-full bg-primary hover:bg-primary-active">
-                  <Search className="w-4 h-4" />
+                  <Search className="w-4 h-4 text-white stroke-white" />
                 </Button>
               </div>
             </div>
@@ -82,6 +80,9 @@ export function DesktopFooter() {
               </div>
               <span className="font-semibold text-sm text-ink">© 2026 SoraStore</span>
             </Link>
+            <span className="text-xs text-muted hidden md:inline">
+              Official store — single brand, fulfilled by us.
+            </span>
           </div>
 
           {/* Links */}

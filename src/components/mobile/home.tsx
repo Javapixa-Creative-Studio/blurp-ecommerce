@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Star, Sparkles, TrendingUp, Shield, Truck, RotateCcw } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Badge } from "@/src/components/ui/badge";
-import { ProductCard } from "@/src/components/shared";
+import { ProductGrid } from "@/src/components/shared";
 import { SafeImage } from "@/src/components/shared/safe-image";
 import { categories } from "@/src/data/categories";
 import { getFeaturedProducts, getNewProducts } from "@/src/data/products";
@@ -199,13 +199,12 @@ export function MobileHome() {
             <ArrowRight className="h-3 w-3" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-3">
-          {featuredProducts.map((product, index) => (
-            <div key={product.id} className={`animate-fade-in stagger-${index + 1}`}>
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
+        <ProductGrid
+          products={featuredProducts}
+          className="grid grid-cols-2 gap-3"
+          itemClassName="animate-fade-in stagger-1"
+          skeletonCount={4}
+        />
       </section>
 
       {/* New Drops */}
@@ -246,13 +245,12 @@ export function MobileHome() {
           </div>
         </Link>
 
-        <div className="grid grid-cols-2 gap-3">
-          {(newDrops.length > 0 ? newDrops : featuredProducts).slice(0, 4).map((product, index) => (
-            <div key={product.id} className={`animate-fade-in stagger-${index + 1}`}>
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
+        <ProductGrid
+          products={(newDrops.length > 0 ? newDrops : featuredProducts).slice(0, 4)}
+          className="grid grid-cols-2 gap-3"
+          itemClassName="animate-fade-in stagger-1"
+          skeletonCount={4}
+        />
       </section>
 
       {/* Ingredients Spotlight */}
@@ -357,7 +355,7 @@ export function MobileHome() {
         <div className="space-y-6">
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shrink-0">
-              <Shield className="w-6 h-6" />
+              <Shield className="w-6 h-6 text-white stroke-white" />
             </div>
             <div>
               <h3 className="font-semibold mb-1">Authentic Picks</h3>
@@ -366,7 +364,7 @@ export function MobileHome() {
           </div>
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shrink-0">
-              <Truck className="w-6 h-6" />
+              <Truck className="w-6 h-6 text-white stroke-white" />
             </div>
             <div>
               <h3 className="font-semibold mb-1">Fast Delivery</h3>
@@ -375,7 +373,7 @@ export function MobileHome() {
           </div>
           <div className="flex items-start gap-4">
             <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shrink-0">
-              <RotateCcw className="w-6 h-6" />
+              <RotateCcw className="w-6 h-6 text-white stroke-white" />
             </div>
             <div>
               <h3 className="font-semibold mb-1">Easy Returns</h3>

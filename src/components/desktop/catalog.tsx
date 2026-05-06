@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ChevronRight, Grid3X3, List, SlidersHorizontal } from "lucide-react";
+import { ChevronRight, Grid3X3, List } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Checkbox } from "@/src/components/ui/checkbox";
 import { Separator } from "@/src/components/ui/separator";
@@ -13,9 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/src/components/ui/select";
-import { ProductCard } from "@/src/components/shared";
+import { ProductCard, ProductCardSkeleton } from "@/src/components/shared";
 import { products } from "@/src/data/products";
 import { categories } from "@/src/data/categories";
+import { useSimulatedLoading } from "@/src/hooks/use-simulated-loading";
 
 const sortOptions = [
   { value: "popular", label: "Terpopuler" },
@@ -37,6 +38,7 @@ export function DesktopCatalog({ category }: DesktopCatalogProps) {
     category ? [category] : []
   );
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const isLoading = useSimulatedLoading(700);
 
   const filteredProducts = products.filter((p) => {
     if (selectedCategories.length > 0 && !selectedCategories.includes(p.categorySlug)) {
@@ -194,7 +196,20 @@ export function DesktopCatalog({ category }: DesktopCatalogProps) {
             </div>
 
             {/* Products */}
-            {filteredProducts.length > 0 ? (
+            {isLoading ? (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-3 gap-6"
+                    : "grid grid-cols-1 gap-4"
+                }
+                aria-busy="true"
+              >
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <ProductCardSkeleton key={i} />
+                ))}
+              </div>
+            ) : filteredProducts.length > 0 ? (
               <div
                 className={
                   viewMode === "grid"

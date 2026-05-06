@@ -1,19 +1,16 @@
 import { MobileNavbar } from "./navbar";
-import { MobileTabBar } from "./tab-bar";
 import { ChatBubble } from "@/src/components/shared";
 
 interface MobileShellProps {
   children: React.ReactNode;
   title?: string;
-  hideTabBar?: boolean;
 }
 
-export function MobileShell({ children, title, hideTabBar }: MobileShellProps) {
+export function MobileShell({ children, title }: MobileShellProps) {
   return (
-    <div className="min-h-screen flex flex-col pb-16">
+    <div className="min-h-screen flex flex-col">
       <MobileNavbar title={title} />
       <main className="flex-1">{children}</main>
-      {!hideTabBar && <MobileTabBar />}
       <ChatBubble />
     </div>
   );

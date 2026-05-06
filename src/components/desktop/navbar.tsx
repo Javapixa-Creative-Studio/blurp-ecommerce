@@ -4,17 +4,20 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Search, Heart, User, ShoppingCart, Menu, X } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { cn } from "@/src/lib/utils";
+import { cn, formatPrice } from "@/src/lib/utils";
 import { SafeImage } from "@/src/components/shared/safe-image";
 import { Dialog, DialogContent, DialogTitle } from "@/src/components/ui/dialog";
 import { CartBadge } from "@/src/components/shared/cart-badge";
+import { products } from "@/src/data/products";
+import { storefrontMegaCategories, type StorefrontMegaCategoryId } from "@/src/data/storefront-nav";
 
 export function DesktopNavbar() {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeMega, setActiveMega] = useState<null | "skincare" | "makeup" | "fragrance" | "hair" | "body" | "tools">(null);
+  const [activeMega, setActiveMega] = useState<null | StorefrontMegaCategoryId>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const megaCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearMegaCloseTimer = () => {
@@ -33,7 +36,7 @@ export function DesktopNavbar() {
     return () => clearMegaCloseTimer();
   }, []);
 
-  const Logo = () => (
+  const renderLogo = () => (
     <Link href="/" className="flex items-center gap-1.5 shrink-0">
       <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
         <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
@@ -44,13 +47,7 @@ export function DesktopNavbar() {
     </Link>
   );
 
-  const MegaItem = ({
-    id,
-    label,
-  }: {
-    id: NonNullable<typeof activeMega>;
-    label: string;
-  }) => (
+  const renderMegaItem = (id: NonNullable<typeof activeMega>, label: string) => (
     <button
       type="button"
       className={cn(
@@ -70,20 +67,17 @@ export function DesktopNavbar() {
     </button>
   );
 
-  const DesktopCenterMenu = () => (
-    <nav
-      className="hidden md:flex items-center justify-center gap-1"
-    >
-      <MegaItem id="skincare" label="Skincare" />
-      <MegaItem id="makeup" label="Makeup" />
-      <MegaItem id="fragrance" label="Fragrance" />
-      <MegaItem id="hair" label="Hair" />
-      <MegaItem id="body" label="Body" />
-      <MegaItem id="tools" label="Tools" />
+  const renderDesktopCenterMenu = () => (
+    <nav className="hidden md:flex items-center justify-center gap-1">
+      {storefrontMegaCategories.map((c) => (
+        <span key={c.id} className="contents">
+          {renderMegaItem(c.id, c.label)}
+        </span>
+      ))}
     </nav>
   );
 
-  const RightIcons = () => (
+  const renderRightIcons = () => (
     <div className="flex items-center gap-1 relative">
       {/* Search icon -> expands */}
       <Button
@@ -132,25 +126,12 @@ export function DesktopNavbar() {
     </div>
   );
 
-  const MegaPanel = () => {
+  const renderMegaPanel = () => {
     if (!activeMega) return null;
 
-    const titleMap: Record<NonNullable<typeof activeMega>, { title: string; desc: string; imageSeed: string }> = {
-      skincare: { title: "Skincare", desc: "Cleanse, treat, hydrate, protect.", imageSeed: "mega-skincare" },
-      makeup: { title: "Makeup", desc: "Everyday tint to soft matte.", imageSeed: "mega-makeup" },
-      fragrance: { title: "Fragrance", desc: "Warm vanilla to clean musk.", imageSeed: "mega-fragrance" },
-      hair: { title: "Hair", desc: "Repair, shine, volume.", imageSeed: "mega-hair" },
-      body: { title: "Body", desc: "Soft, hydrated, scented.", imageSeed: "mega-body" },
-      tools: { title: "Tools", desc: "Brushes, sponges, essentials.", imageSeed: "mega-tools" },
-    };
-
-    const t = titleMap[activeMega];
-    const links = [
-      { label: "Best Sellers", href: `/store/catalog?category=${activeMega}` },
-      { label: "New Drops", href: `/store/catalog?category=${activeMega}` },
-      { label: "Bundles", href: `/store/catalog?category=${activeMega}` },
-      { label: "Under Rp 150k", href: `/store/catalog?category=${activeMega}` },
-    ];
+    const t = storefrontMegaCategories.find((c) => c.id === activeMega);
+    if (!t) return null;
+    const links = t.links;
 
     return (
       <div
@@ -162,8 +143,8 @@ export function DesktopNavbar() {
           <div className="grid grid-cols-12 gap-6">
             <div className="col-span-4">
               <div className="text-xs uppercase tracking-wider text-muted">Explore</div>
-              <div className="text-2xl font-bold text-ink mt-2">{t.title}</div>
-              <div className="text-sm text-muted mt-2">{t.desc}</div>
+              <div className="text-2xl font-bold text-ink mt-2">{t.label}</div>
+              <div className="text-sm text-muted mt-2">{t.description}</div>
               <div className="mt-4 grid gap-2">
                 {links.map((l) => (
                   <Link
@@ -223,16 +204,16 @@ export function DesktopNavbar() {
           onMouseEnter={clearMegaCloseTimer}
           onMouseLeave={scheduleMegaClose}
         >
-          <Logo />
+          {renderLogo()}
           <div className="flex justify-center">
-            <DesktopCenterMenu />
+            {renderDesktopCenterMenu()}
           </div>
-          <RightIcons />
+          {renderRightIcons()}
         </div>
 
         {/* Mobile/Tablet: flex row logo + hamburger */}
         <div className="flex md:hidden items-center justify-between px-4 h-14">
-          <Logo />
+          {renderLogo()}
           <div className="flex items-center gap-1">
             <Link href="/store/keranjang">
               <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface-soft relative">
@@ -252,7 +233,7 @@ export function DesktopNavbar() {
         </div>
 
         {/* Mega menu panel */}
-        <MegaPanel />
+        {renderMegaPanel()}
       </header>
 
       {/* Fullscreen search dialog (closes on ESC / backdrop / X) */}
@@ -261,6 +242,7 @@ export function DesktopNavbar() {
         onOpenChange={(open) => {
           setIsSearchOpen(open);
           if (open) setIsWishlistOpen(false);
+          if (!open) setSearchQuery("");
         }}
       >
         <DialogContent className="max-w-2xl rounded-2xl p-0 overflow-hidden">
@@ -279,6 +261,8 @@ export function DesktopNavbar() {
                   type="text"
                   placeholder="Cari skincare, makeup, fragrance..."
                   className="flex-1 bg-transparent outline-none text-sm text-ink placeholder:text-muted"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setIsSearchFocused(true)}
                   onBlur={() => setIsSearchFocused(false)}
                   autoFocus
@@ -291,23 +275,56 @@ export function DesktopNavbar() {
                 </button>
               </div>
             </div>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {[
-                { label: "Serum", href: "/store/catalog?category=skincare" },
-                { label: "Cleanser", href: "/store/catalog?category=skincare" },
-                { label: "Lip tint", href: "/store/catalog?category=makeup" },
-                { label: "Parfum", href: "/store/catalog?category=fragrance" },
-              ].map((t) => (
-                <Link
-                  key={t.label}
-                  href={t.href}
-                  className="px-3 py-1.5 rounded-full bg-white border border-hairline text-xs font-semibold text-ink/70 hover:text-ink hover:border-ink/40 transition-colors"
-                  onClick={() => setIsSearchOpen(false)}
-                >
-                  {t.label}
-                </Link>
-              ))}
-            </div>
+            {searchQuery.trim() ? (
+              <div className="mt-5">
+                <div className="text-xs uppercase tracking-wider text-muted mb-3">Hasil</div>
+                <div className="grid grid-cols-1 gap-2">
+                  {products
+                    .filter((p) => p.name.toLowerCase().includes(searchQuery.trim().toLowerCase()))
+                    .slice(0, 6)
+                    .map((p) => (
+                      <Link
+                        key={p.id}
+                        href={`/store/product/${p.slug}`}
+                        className="flex items-center gap-3 rounded-xl border border-hairline bg-white px-3 py-2.5 hover:bg-surface-soft transition-colors"
+                        onClick={() => setIsSearchOpen(false)}
+                      >
+                        <div className="h-12 w-12 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
+                          <SafeImage
+                            src={p.images?.[0] ?? `https://picsum.photos/seed/${p.slug}/120/120`}
+                            alt={p.name}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-sm font-semibold text-ink line-clamp-1">{p.name}</div>
+                          <div className="text-xs text-muted">{p.category}</div>
+                        </div>
+                        <div className="text-sm font-semibold">{formatPrice(p.price)}</div>
+                      </Link>
+                    ))}
+                </div>
+              </div>
+            ) : (
+              <div className="mt-4 flex flex-wrap gap-2">
+                {[
+                  { label: "Serum", href: "/store/catalog?category=skincare" },
+                  { label: "Cleanser", href: "/store/catalog?category=skincare" },
+                  { label: "Lip tint", href: "/store/catalog?category=makeup" },
+                  { label: "Parfum", href: "/store/catalog?category=fragrance" },
+                ].map((t) => (
+                  <Link
+                    key={t.label}
+                    href={t.href}
+                    className="px-3 py-1.5 rounded-full bg-white border border-hairline text-xs font-semibold text-ink/70 hover:text-ink hover:border-ink/40 transition-colors"
+                    onClick={() => setIsSearchOpen(false)}
+                  >
+                    {t.label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
           <div className="p-6 bg-surface-soft">
             <div className="text-xs uppercase tracking-wider text-muted mb-3">Trending</div>
@@ -335,8 +352,11 @@ export function DesktopNavbar() {
       {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setIsMobileMenuOpen(false)} />
-          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl flex flex-col">
+          <div
+            className="absolute inset-0 bg-ink/30"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+          <div className="absolute right-0 top-0 bottom-0 z-[1] w-72 bg-white shadow-2xl flex flex-col translate-z-0">
             <div className="flex items-center justify-between px-4 h-14 border-b shrink-0">
               <span className="font-semibold text-ink">Menu</span>
               <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>

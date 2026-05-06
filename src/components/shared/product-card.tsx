@@ -15,7 +15,6 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
-  const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { addItem } = useCart();
 
@@ -27,14 +26,12 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const productImage = product.images?.[0] || `https://picsum.photos/seed/${product.slug}/600/600`;
 
   return (
-    <Card 
+    <Card
       className={cn(
         "group overflow-hidden border-0 shadow-none transition-all duration-300",
         "hover-lift rounded-md",
         className
       )}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
     >
       <Link href={`/store/product/${product.slug}`}>
         <div className="relative aspect-square overflow-hidden rounded-md bg-surface-soft">
@@ -79,11 +76,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
             )}
           </div>
 
-          {/* Quick Add on Hover - Airbnb Style */}
-          <div className={cn(
-            "absolute bottom-0 left-0 right-0 p-3 transition-all duration-300",
-            isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          )}>
+          {/* Quick Add — visible on mobile, reveal on hover for desktop */}
+          <div
+            className={cn(
+              "absolute bottom-0 left-0 right-0 p-3 transition-all duration-300",
+              "opacity-100 translate-y-0",
+              "md:opacity-0 md:translate-y-4 md:group-hover:opacity-100 md:group-hover:translate-y-0"
+            )}
+          >
             <Button
               variant="secondary"
               size="sm"

@@ -8,6 +8,7 @@ interface StorefrontLayoutProps {
   desktopContent?: React.ReactNode;
   mobileContent?: React.ReactNode;
   mobileTitle?: string;
+  /** @deprecated mobile tab bar has been removed */
   hideMobileTabBar?: boolean;
 }
 
@@ -16,7 +17,6 @@ export function StorefrontLayout({
   desktopContent,
   mobileContent,
   mobileTitle,
-  hideMobileTabBar,
 }: StorefrontLayoutProps) {
   const desktopNode = desktopContent && mobileContent ? desktopContent : children;
   const mobileNode = desktopContent && mobileContent ? mobileContent : children;
@@ -27,9 +27,7 @@ export function StorefrontLayout({
         <DesktopShell>{desktopNode}</DesktopShell>
       </div>
       <div className="md:hidden">
-        <MobileShell title={mobileTitle} hideTabBar={hideMobileTabBar}>
-          {mobileNode}
-        </MobileShell>
+        <MobileShell title={mobileTitle}>{mobileNode}</MobileShell>
       </div>
     </>
   );
