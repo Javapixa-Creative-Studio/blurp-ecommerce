@@ -1,10 +1,21 @@
 "use client";
 
-export default function OrderPage() {
-  return (
-    <div className="container mx-auto px-6 py-8">
-      <h1 className="text-2xl font-semibold mb-4">Detail Pesanan</h1>
-      <p className="text-muted-foreground">Halaman pesanan sedang dalam pengembangan.</p>
-    </div>
+import { use } from "react";
+import { useIsDesktop } from "@/src/hooks";
+import { DesktopOrderSuccess } from "@/src/components/desktop";
+import { MobileOrderSuccess } from "@/src/components/mobile";
+
+interface OrderPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function OrderPage({ params }: OrderPageProps) {
+  const { id } = use(params);
+  const isDesktop = useIsDesktop();
+
+  return isDesktop ? (
+    <DesktopOrderSuccess orderId={id} />
+  ) : (
+    <MobileOrderSuccess orderId={id} />
   );
 }
