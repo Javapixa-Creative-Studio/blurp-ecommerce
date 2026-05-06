@@ -19,6 +19,7 @@ import { Product } from "@/src/data/products";
 import { shippingOptions, cities } from "@/src/data/shipping";
 import { formatPrice, calculateDiscount, cn } from "@/src/lib/utils";
 import { productImages } from "@/src/data/mock-images";
+import { useCart } from "@/src/components/shared/cart-provider";
 
 interface DesktopProductDetailProps {
   product: Product;
@@ -31,6 +32,7 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
   const [selectedCity, setSelectedCity] = useState("");
   const [showShipping, setShowShipping] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const { addItem } = useCart();
 
   const discount = product.originalPrice
     ? calculateDiscount(product.originalPrice, product.price)
@@ -255,7 +257,18 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
 
             {/* Actions - Airbnb Style */}
             <div className="flex gap-3">
-              <Button size="lg" className="flex-1 rounded-lg font-semibold">
+              <Button
+                size="lg"
+                className="flex-1 rounded-lg font-semibold"
+                onClick={() => {
+                  addItem({
+                    productId: product.id,
+                    quantity,
+                    color: selectedColor || undefined,
+                    size: selectedSize || undefined,
+                  });
+                }}
+              >
                 + Keranjang
               </Button>
               <Button size="lg" variant="outline" className="flex-1 rounded-lg font-semibold">

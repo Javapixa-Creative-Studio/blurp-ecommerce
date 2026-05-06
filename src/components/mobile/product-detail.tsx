@@ -17,6 +17,7 @@ import { Product } from "@/src/data/products";
 import { shippingOptions, cities } from "@/src/data/shipping";
 import { formatPrice, calculateDiscount, cn } from "@/src/lib/utils";
 import { productImages } from "@/src/data/mock-images";
+import { useCart } from "@/src/components/shared/cart-provider";
 
 interface MobileProductDetailProps {
   product: Product;
@@ -31,6 +32,7 @@ export function MobileProductDetail({ product }: MobileProductDetailProps) {
   const [showDescription, setShowDescription] = useState(false);
   const [showSpecs, setShowSpecs] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
+  const { addItem } = useCart();
 
   const discount = product.originalPrice
     ? calculateDiscount(product.originalPrice, product.price)
@@ -294,7 +296,19 @@ export function MobileProductDetail({ product }: MobileProductDetailProps) {
 
       {/* Fixed Bottom Bar - Airbnb Style */}
       <div className="fixed bottom-14 left-0 right-0 bg-white border-t border-hairline p-4 flex gap-3 z-40">
-        <Button variant="outline" size="lg" className="flex-1 rounded-lg font-semibold">
+        <Button
+          variant="outline"
+          size="lg"
+          className="flex-1 rounded-lg font-semibold"
+          onClick={() => {
+            addItem({
+              productId: product.id,
+              quantity,
+              color: selectedColor || undefined,
+              size: selectedSize || undefined,
+            });
+          }}
+        >
           + Keranjang
         </Button>
         <Button size="lg" className="flex-1 rounded-lg font-semibold">

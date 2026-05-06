@@ -5,6 +5,7 @@ import { Button } from "@/src/components/ui/button";
 import { Card } from "@/src/components/ui/card";
 import { Product } from "@/src/data/products";
 import { SafeImage } from "@/src/components/shared/safe-image";
+import { useCart } from "@/src/components/shared/cart-provider";
 import { cn, formatPrice, calculateDiscount } from "@/src/lib/utils";
 import { useState } from "react";
 
@@ -16,6 +17,7 @@ interface ProductCardProps {
 export function ProductCard({ product, className }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addItem } = useCart();
 
   const discount = product.originalPrice
     ? calculateDiscount(product.originalPrice, product.price)
@@ -88,7 +90,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
               className="w-full bg-white text-ink font-semibold hover:bg-white/90 shadow-md"
               onClick={(e) => {
                 e.preventDefault();
-                // Add to cart logic
+                e.stopPropagation();
+                addItem({ productId: product.id, quantity: 1 });
               }}
             >
               + Keranjang
