@@ -1,91 +1,392 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Search, Heart, User, ShoppingCart } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Search, Heart, User, ShoppingCart, Menu, X } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { Input } from "@/src/components/ui/input";
 import { cn } from "@/src/lib/utils";
-
-const navItems = [
-  { label: "Beranda", href: "/" },
-  { label: "Katalog", href: "/store/catalog" },
-  { label: "About", href: "/about" },
-  { label: "Lokasi", href: "/lokasi" },
-];
+import { SafeImage } from "@/src/components/shared/safe-image";
+import { Dialog, DialogContent, DialogTitle } from "@/src/components/ui/dialog";
 
 export function DesktopNavbar() {
-  const pathname = usePathname();
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeMega, setActiveMega] = useState<null | "skincare" | "makeup" | "fragrance" | "hair" | "body" | "tools">(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+  const megaCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/" || pathname === "/store";
-    return pathname.startsWith(href);
+  const clearMegaCloseTimer = () => {
+    if (megaCloseTimer.current) {
+      clearTimeout(megaCloseTimer.current);
+      megaCloseTimer.current = null;
+    }
+  };
+
+  const scheduleMegaClose = () => {
+    clearMegaCloseTimer();
+    megaCloseTimer.current = setTimeout(() => setActiveMega(null), 120);
+  };
+
+  useEffect(() => {
+    return () => clearMegaCloseTimer();
+  }, []);
+
+  const Logo = () => (
+    <Link href="/" className="flex items-center gap-1.5 shrink-0">
+      <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+        <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+        </svg>
+      </div>
+      <span className="text-xl font-semibold text-ink">SoraStore</span>
+    </Link>
+  );
+
+  const MegaItem = ({
+    id,
+    label,
+  }: {
+    id: NonNullable<typeof activeMega>;
+    label: string;
+  }) => (
+    <button
+      type="button"
+      className={cn(
+        "px-3 py-2 rounded-full text-sm font-medium transition-colors",
+        activeMega === id ? "bg-surface-soft text-ink" : "text-ink/70 hover:text-ink hover:bg-surface-soft"
+      )}
+      onMouseEnter={() => {
+        clearMegaCloseTimer();
+        setActiveMega(id);
+      }}
+      onFocus={() => setActiveMega(id)}
+      onClick={() => setActiveMega((v) => (v === id ? null : id))}
+      aria-expanded={activeMega === id}
+      aria-haspopup="true"
+    >
+      {label}
+    </button>
+  );
+
+  const DesktopCenterMenu = () => (
+    <nav
+      className="hidden md:flex items-center justify-center gap-1"
+    >
+      <MegaItem id="skincare" label="Skincare" />
+      <MegaItem id="makeup" label="Makeup" />
+      <MegaItem id="fragrance" label="Fragrance" />
+      <MegaItem id="hair" label="Hair" />
+      <MegaItem id="body" label="Body" />
+      <MegaItem id="tools" label="Tools" />
+    </nav>
+  );
+
+  const RightIcons = () => (
+    <div className="flex items-center gap-1 relative">
+      {/* Search icon -> expands */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="rounded-full hover:bg-surface-soft"
+        aria-label="Buka pencarian"
+        aria-expanded={isSearchOpen}
+        onClick={() => {
+          setIsSearchOpen((v) => !v);
+          setIsWishlistOpen(false);
+        }}
+      >
+        <Search className="w-5 h-5 text-ink" />
+      </Button>
+
+      {/* Wishlist icon -> expands */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="rounded-full hover:bg-surface-soft"
+        aria-label="Buka wishlist"
+        aria-expanded={isWishlistOpen}
+        onClick={() => {
+          setIsWishlistOpen((v) => !v);
+          setIsSearchOpen(false);
+        }}
+      >
+        <Heart className="w-5 h-5 text-ink" />
+      </Button>
+
+      <Link href="/store/keranjang">
+        <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface-soft relative">
+          <ShoppingCart className="w-5 h-5 text-ink" />
+          <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-white text-xs flex items-center justify-center font-semibold leading-none">
+            2
+          </span>
+        </Button>
+      </Link>
+      <Link href="/login">
+        <button className="flex items-center gap-2 pl-3 pr-4 py-2 rounded-full border border-hairline hover:border-ink hover:shadow-md transition-all ml-1">
+          <Menu className="w-4 h-4 text-muted" />
+          <div className="w-7 h-7 rounded-full bg-ink flex items-center justify-center">
+            <User className="w-3.5 h-3.5 text-white" />
+          </div>
+        </button>
+      </Link>
+    </div>
+  );
+
+  const MegaPanel = () => {
+    if (!activeMega) return null;
+
+    const titleMap: Record<NonNullable<typeof activeMega>, { title: string; desc: string; imageSeed: string }> = {
+      skincare: { title: "Skincare", desc: "Cleanse, treat, hydrate, protect.", imageSeed: "mega-skincare" },
+      makeup: { title: "Makeup", desc: "Everyday tint to soft matte.", imageSeed: "mega-makeup" },
+      fragrance: { title: "Fragrance", desc: "Warm vanilla to clean musk.", imageSeed: "mega-fragrance" },
+      hair: { title: "Hair", desc: "Repair, shine, volume.", imageSeed: "mega-hair" },
+      body: { title: "Body", desc: "Soft, hydrated, scented.", imageSeed: "mega-body" },
+      tools: { title: "Tools", desc: "Brushes, sponges, essentials.", imageSeed: "mega-tools" },
+    };
+
+    const t = titleMap[activeMega];
+    const links = [
+      { label: "Best Sellers", href: `/store/catalog?category=${activeMega}` },
+      { label: "New Drops", href: `/store/catalog?category=${activeMega}` },
+      { label: "Bundles", href: `/store/catalog?category=${activeMega}` },
+      { label: "Under Rp 150k", href: `/store/catalog?category=${activeMega}` },
+    ];
+
+    return (
+      <div
+        className="absolute left-0 right-0 top-full z-50 border-b border-hairline bg-white/95 backdrop-blur"
+        onMouseEnter={clearMegaCloseTimer}
+        onMouseLeave={scheduleMegaClose}
+      >
+        <div className="container mx-auto px-6 py-6">
+          <div className="grid grid-cols-12 gap-6">
+            <div className="col-span-4">
+              <div className="text-xs uppercase tracking-wider text-muted">Explore</div>
+              <div className="text-2xl font-bold text-ink mt-2">{t.title}</div>
+              <div className="text-sm text-muted mt-2">{t.desc}</div>
+              <div className="mt-4 grid gap-2">
+                {links.map((l) => (
+                  <Link
+                    key={l.label}
+                    href={l.href}
+                    className="group flex items-center justify-between rounded-xl px-3 py-2 bg-surface-soft hover:bg-surface-strong transition-colors"
+                  >
+                    <span className="text-sm font-semibold text-ink">{l.label}</span>
+                    <span className="text-sm text-muted group-hover:text-ink transition-colors">→</span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="col-span-8 grid grid-cols-3 gap-4">
+              {[
+                { title: "Glow Essentials", subtitle: "Set simpel untuk kulit fresh", seed: `${t.imageSeed}-1` },
+                { title: "Texture Lovers", subtitle: "Creamy to gel, ringan", seed: `${t.imageSeed}-2` },
+                { title: "Signature Notes", subtitle: "Clean musk mood", seed: `${t.imageSeed}-3` },
+              ].map((c) => (
+                <Link
+                  key={c.seed}
+                  href={`/store/catalog?category=${activeMega}`}
+                  className="group rounded-2xl overflow-hidden border border-hairline bg-surface-soft hover:bg-surface-strong transition-colors"
+                >
+                  <div className="relative h-32 overflow-hidden">
+                    <SafeImage
+                      src={`https://picsum.photos/seed/${c.seed}/900/600`}
+                      alt={c.title}
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                      fallbackSrcs={[
+                        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=1600&h=900&fit=crop&q=80",
+                      ]}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/0 to-transparent" />
+                  </div>
+                  <div className="p-4">
+                    <div className="text-sm font-semibold text-ink">{c.title}</div>
+                    <div className="text-xs text-muted mt-1">{c.subtitle}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="container mx-auto">
-        <div className="flex h-16 items-center justify-between px-6">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[hsl(var(--accent))] to-[hsl(var(--accent))]/70" />
-            <span className="text-xl font-semibold tracking-tight">SoraStore</span>
-          </Link>
-
-          <div className="flex-1 max-w-md mx-8">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Cari produk..."
-                className="pl-10 bg-secondary/50 border-transparent focus:border-border focus:bg-white transition-colors"
-              />
-            </div>
+    <>
+      <header className="sticky top-0 z-50 w-full bg-white border-b border-hairline relative">
+        {/* Desktop: logo | center menu | icons */}
+        <div
+          className="hidden md:grid grid-cols-[auto_1fr_auto] items-center px-6 h-16 gap-4"
+          onMouseEnter={clearMegaCloseTimer}
+          onMouseLeave={scheduleMegaClose}
+        >
+          <Logo />
+          <div className="flex justify-center">
+            <DesktopCenterMenu />
           </div>
+          <RightIcons />
+        </div>
 
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/wishlist" className="flex items-center gap-2">
-                <Heart className="h-4 w-4" />
-                <span>Wishlist</span>
-              </Link>
-            </Button>
-
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>Masuk</span>
-              </Link>
-            </Button>
-
-            <Button variant="ghost" size="sm" className="relative" asChild>
-              <Link href="/store/keranjang" className="flex items-center gap-2">
-                <ShoppingCart className="h-4 w-4" />
-                <span>Keranjang</span>
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
+        {/* Mobile/Tablet: flex row logo + hamburger */}
+        <div className="flex md:hidden items-center justify-between px-4 h-14">
+          <Logo />
+          <div className="flex items-center gap-1">
+            <Link href="/store/keranjang">
+              <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface-soft relative">
+                <ShoppingCart className="w-5 h-5 text-ink" />
+                <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-white text-[10px] flex items-center justify-center font-semibold leading-none">
                   2
                 </span>
-              </Link>
+              </Button>
+            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full hover:bg-surface-soft"
+              onClick={() => setIsMobileMenuOpen(true)}
+            >
+              <Menu className="w-5 h-5 text-ink" />
             </Button>
           </div>
         </div>
 
-        <nav className="flex items-center gap-6 px-6 pb-3">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "text-sm font-medium transition-colors hover:text-primary",
-                isActive(item.href)
-                  ? "text-primary border-b-2 border-primary pb-1"
-                  : "text-muted-foreground"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </header>
+        {/* Mega menu panel */}
+        <MegaPanel />
+      </header>
+
+      {/* Fullscreen search dialog (closes on ESC / backdrop / X) */}
+      <Dialog
+        open={isSearchOpen}
+        onOpenChange={(open) => {
+          setIsSearchOpen(open);
+          if (open) setIsWishlistOpen(false);
+        }}
+      >
+        <DialogContent className="max-w-2xl rounded-2xl p-0 overflow-hidden">
+          <div className="p-6 border-b border-hairline bg-white">
+            <DialogTitle className="text-base font-semibold text-ink">Search</DialogTitle>
+            <div className="mt-4">
+              <div
+                className={cn(
+                  "flex items-center gap-3 bg-surface-soft border border-hairline rounded-full px-5 h-12 w-full transition-all duration-200",
+                  "shadow-sm hover:shadow-md",
+                  isSearchFocused && "ring-2 ring-ink border-ink shadow-md"
+                )}
+              >
+                <Search className="w-4 h-4 text-muted shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Cari skincare, makeup, fragrance..."
+                  className="flex-1 bg-transparent outline-none text-sm text-ink placeholder:text-muted"
+                  onFocus={() => setIsSearchFocused(true)}
+                  onBlur={() => setIsSearchFocused(false)}
+                  autoFocus
+                />
+                <button
+                  className="h-9 px-4 bg-primary rounded-full flex items-center justify-center hover:bg-primary-active transition-colors shrink-0 shadow-sm"
+                  aria-label="Cari"
+                >
+                  <Search className="w-4 h-4 text-white" />
+                </button>
+              </div>
+            </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                { label: "Serum", href: "/store/catalog?category=skincare" },
+                { label: "Cleanser", href: "/store/catalog?category=skincare" },
+                { label: "Lip tint", href: "/store/catalog?category=makeup" },
+                { label: "Parfum", href: "/store/catalog?category=fragrance" },
+              ].map((t) => (
+                <Link
+                  key={t.label}
+                  href={t.href}
+                  className="px-3 py-1.5 rounded-full bg-white border border-hairline text-xs font-semibold text-ink/70 hover:text-ink hover:border-ink/40 transition-colors"
+                  onClick={() => setIsSearchOpen(false)}
+                >
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+          <div className="p-6 bg-surface-soft">
+            <div className="text-xs uppercase tracking-wider text-muted mb-3">Trending</div>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Vitamin C", href: "/store/catalog?category=skincare" },
+                { label: "Niacinamide", href: "/store/catalog?category=skincare" },
+                { label: "Cushion", href: "/store/catalog?category=makeup" },
+                { label: "Vanilla musk", href: "/store/catalog?category=fragrance" },
+              ].map((t) => (
+                <Link
+                  key={t.label}
+                  href={t.href}
+                  className="rounded-xl border border-hairline bg-white px-4 py-3 text-sm font-semibold text-ink hover:bg-surface-soft transition-colors"
+                  onClick={() => setIsSearchOpen(false)}
+                >
+                  {t.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mobile Menu Drawer */}
+      {isMobileMenuOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setIsMobileMenuOpen(false)} />
+          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl flex flex-col">
+            <div className="flex items-center justify-between px-4 h-14 border-b shrink-0">
+              <span className="font-semibold text-ink">Menu</span>
+              <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+            <nav className="p-4 flex flex-col gap-1 flex-1 overflow-y-auto">
+              <div className="flex items-center gap-2 border border-hairline rounded-full px-4 py-2.5 mb-2">
+                <Search className="w-4 h-4 text-muted shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Cari produk..."
+                  className="flex-1 bg-transparent outline-none text-sm"
+                />
+              </div>
+              <div className="h-px bg-hairline my-2" />
+              <Link
+                href="/wishlist"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg hover:bg-surface-soft transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Heart className="w-5 h-5 text-muted" />
+                Wishlist
+              </Link>
+              <Link
+                href="/store/keranjang"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg hover:bg-surface-soft transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <ShoppingCart className="w-5 h-5 text-muted" />
+                Keranjang
+                <span className="ml-auto h-5 w-5 rounded-full bg-primary text-white text-xs flex items-center justify-center font-semibold">
+                  2
+                </span>
+              </Link>
+              <Link
+                href="/login"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg hover:bg-surface-soft transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <User className="w-5 h-5 text-muted" />
+                Masuk
+              </Link>
+            </nav>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

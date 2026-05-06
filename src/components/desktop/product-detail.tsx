@@ -18,6 +18,7 @@ import { QuantityPicker } from "@/src/components/shared";
 import { Product } from "@/src/data/products";
 import { shippingOptions, cities } from "@/src/data/shipping";
 import { formatPrice, calculateDiscount, cn } from "@/src/lib/utils";
+import { productImages } from "@/src/data/mock-images";
 
 interface DesktopProductDetailProps {
   product: Product;
@@ -29,121 +30,139 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedCity, setSelectedCity] = useState("");
   const [showShipping, setShowShipping] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
 
   const discount = product.originalPrice
     ? calculateDiscount(product.originalPrice, product.price)
     : null;
 
   const isLowStock = product.stock <= 3;
+  
+  // Get product image
+  const mainImage = productImages[product.slug] || productImages.product1;
+  const imageVariants = [
+    mainImage,
+    productImages.product2,
+    productImages.product3,
+    productImages.product4,
+  ];
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="bg-canvas min-h-screen">
       {/* Breadcrumb */}
       <div className="container mx-auto px-6 py-4">
-        <nav className="flex items-center text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">Beranda</Link>
+        <nav className="flex items-center text-sm text-muted">
+          <Link href="/" className="hover:text-ink transition-colors">Beranda</Link>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <Link href="/store/catalog" className="hover:text-foreground transition-colors">Katalog</Link>
+          <Link href="/store/catalog" className="hover:text-ink transition-colors">Katalog</Link>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <Link href={`/store/catalog?category=${product.categorySlug}`} className="hover:text-foreground transition-colors">
+          <Link href={`/store/catalog?category=${product.categorySlug}`} className="hover:text-ink transition-colors">
             {product.category}
           </Link>
           <ChevronRight className="h-4 w-4 mx-2" />
-          <span className="text-foreground font-medium">{product.name}</span>
+          <span className="text-ink font-medium">{product.name}</span>
         </nav>
       </div>
 
-      <div className="container mx-auto px-6 pb-12">
+      <div className="container mx-auto px-6 pb-16">
         <div className="grid grid-cols-2 gap-12">
-          {/* Image Gallery */}
+          {/* Image Gallery - Airbnb Style */}
           <div className="space-y-4">
-            <div className="aspect-square bg-secondary rounded-2xl flex items-center justify-center text-muted-foreground">
-              {product.name}
+            <div className="aspect-square rounded-xl overflow-hidden bg-surface-soft group">
+              <img 
+                src={imageVariants[activeImage]} 
+                alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
             <div className="grid grid-cols-4 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div
+              {imageVariants.map((img, i) => (
+                <button
                   key={i}
-                  className="aspect-square bg-secondary rounded-lg flex items-center justify-center text-xs text-muted-foreground cursor-pointer hover:ring-2 ring-primary transition-all"
+                  className={cn(
+                    "aspect-square rounded-lg overflow-hidden transition-all",
+                    activeImage === i 
+                      ? "ring-2 ring-ink" 
+                      : "hover:ring-2 hover:ring-primary/50"
+                  )}
+                  onClick={() => setActiveImage(i)}
                 >
-                  {i}
-                </div>
+                  <img 
+                    src={img} 
+                    alt={`${product.name} - ${i + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Product Info */}
+          {/* Product Info - Airbnb Style */}
           <div className="space-y-6">
             {/* Header */}
             <div>
               <div className="flex items-start justify-between">
                 <div>
-                  {product.isNew && <Badge className="mb-2">BARU</Badge>}
-                  <h1 className="text-2xl font-bold">{product.name}</h1>
-                  <p className="text-muted-foreground mt-1">SKU: {product.sku}</p>
+                  {product.isNew && (
+                    <Badge className="mb-2 bg-surface-soft text-ink font-bold text-[10px] uppercase tracking-wide">
+                      BARU
+                    </Badge>
+                  )}
+                  <h1 className="text-2xl font-semibold text-ink">{product.name}</h1>
+                  <p className="text-sm text-muted mt-1">SKU: {product.sku}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface-soft">
                     <Heart className="h-5 w-5" />
                   </Button>
-                  <Button variant="ghost" size="icon">
+                  <Button variant="ghost" size="icon" className="rounded-full hover:bg-surface-soft">
                     <Share2 className="h-5 w-5" />
                   </Button>
                 </div>
               </div>
 
-              {/* Rating */}
+              {/* Rating - Airbnb Style */}
               <div className="flex items-center gap-2 mt-3">
-                <div className="flex">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={cn(
-                        "h-4 w-4",
-                        star <= Math.floor(product.rating)
-                          ? "fill-amber-400 text-amber-400"
-                          : "text-muted-foreground/30"
-                      )}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm font-medium">{product.rating}</span>
-                <span className="text-sm text-muted-foreground">
+                <Star className="h-4 w-4 text-star-rating fill-star-rating" />
+                <span className="font-medium text-ink">{product.rating}</span>
+                <span className="text-sm text-muted">
                   ({product.reviewCount} ulasan)
                 </span>
               </div>
 
               {/* Price */}
               <div className="flex items-baseline gap-3 mt-4">
-                <span className="text-3xl font-bold">{formatPrice(product.price)}</span>
+                <span className="text-3xl font-bold text-ink">{formatPrice(product.price)}</span>
                 {product.originalPrice && (
                   <>
-                    <span className="text-lg text-muted-foreground line-through">
+                    <span className="text-base text-muted line-through">
                       {formatPrice(product.originalPrice)}
                     </span>
-                    <Badge variant="destructive">-{discount}%</Badge>
+                    <Badge className="bg-primary text-white font-bold text-[10px] uppercase tracking-wide">
+                      -{discount}%
+                    </Badge>
                   </>
                 )}
               </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-hairline" />
 
             {/* Color Selection */}
             {product.colors.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3">
-                  Warna: <span className="text-muted-foreground">{selectedColor}</span>
+                <h3 className="font-semibold mb-3 text-sm">
+                  Warna: <span className="font-normal text-muted">{selectedColor}</span>
                 </h3>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   {product.colors.map((color) => (
                     <button
                       key={color.name}
                       className={cn(
-                        "h-10 w-10 rounded-full border-2 transition-all",
+                        "h-12 w-12 rounded-full border-2 transition-all hover:scale-110",
                         selectedColor === color.name
-                          ? "border-primary ring-2 ring-primary/20"
-                          : "border-border hover:border-primary/50"
+                          ? "border-ink ring-2 ring-ink/20 scale-110"
+                          : "border-hairline hover:border-ink"
                       )}
                       style={{ backgroundColor: color.value }}
                       onClick={() => setSelectedColor(color.name)}
@@ -157,13 +176,13 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
             {/* Size Selection */}
             {product.sizes.length > 0 && (
               <div>
-                <h3 className="font-medium mb-3">Ukuran</h3>
-                <div className="flex gap-2">
+                <h3 className="font-semibold mb-3 text-sm">Ukuran</h3>
+                <div className="flex gap-3">
                   {product.sizes.map((size) => (
                     <Button
                       key={size}
                       variant={selectedSize === size ? "default" : "outline"}
-                      className="h-10 w-12"
+                      className="h-12 w-14 rounded-lg"
                       onClick={() => setSelectedSize(size)}
                     >
                       {size}
@@ -175,7 +194,7 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
 
             {/* Quantity */}
             <div>
-              <h3 className="font-medium mb-3">Jumlah</h3>
+              <h3 className="font-semibold mb-3 text-sm">Jumlah</h3>
               <div className="flex items-center gap-4">
                 <QuantityPicker
                   value={quantity}
@@ -183,18 +202,18 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
                   max={product.stock}
                 />
                 {isLowStock && (
-                  <span className="text-sm text-destructive">
+                  <span className="text-sm text-primary font-medium">
                     Sisa {product.stock} item
                   </span>
                 )}
               </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-hairline" />
 
-            {/* Cek Ongkir */}
-            <div className="bg-secondary/50 rounded-xl p-4">
-              <h3 className="font-medium mb-3 flex items-center gap-2">
+            {/* Cek Ongkir - Airbnb Card Style */}
+            <div className="bg-surface-soft rounded-xl p-5">
+              <h3 className="font-semibold mb-3 flex items-center gap-2 text-sm">
                 <Truck className="h-4 w-4" />
                 Cek Ongkos Kirim
               </h3>
@@ -203,7 +222,7 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
                   setSelectedCity(v);
                   setShowShipping(true);
                 }}>
-                  <SelectTrigger className="flex-1">
+                  <SelectTrigger className="flex-1 bg-white">
                     <SelectValue placeholder="Pilih kota tujuan..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -217,44 +236,44 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
               </div>
 
               {showShipping && selectedCity && (
-                <div className="mt-4 space-y-2">
+                <div className="mt-4 space-y-2 animate-fade-in">
                   {shippingOptions.map((opt) => (
                     <div
                       key={opt.id}
-                      className="flex items-center justify-between py-2 px-3 bg-white rounded-lg"
+                      className="flex items-center justify-between py-3 px-4 bg-white rounded-lg border border-hairline hover:border-ink hover-lift transition-all cursor-pointer"
                     >
                       <div>
-                        <p className="font-medium text-sm">{opt.name}</p>
-                        <p className="text-xs text-muted-foreground">{opt.estimate}</p>
+                        <p className="font-medium text-sm text-ink">{opt.name}</p>
+                        <p className="text-xs text-muted">{opt.estimate}</p>
                       </div>
-                      <span className="font-medium">{formatPrice(opt.price)}</span>
+                      <span className="font-semibold text-ink">{formatPrice(opt.price)}</span>
                     </div>
                   ))}
                 </div>
               )}
             </div>
 
-            {/* Actions */}
+            {/* Actions - Airbnb Style */}
             <div className="flex gap-3">
-              <Button size="lg" className="flex-1">
-                Tambah ke Keranjang
+              <Button size="lg" className="flex-1 rounded-lg font-semibold">
+                + Keranjang
               </Button>
-              <Button size="lg" variant="outline" className="flex-1">
+              <Button size="lg" variant="outline" className="flex-1 rounded-lg font-semibold">
                 Beli Sekarang
               </Button>
             </div>
 
-            {/* Trust Badges */}
+            {/* Trust Badges - Airbnb Style */}
             <div className="grid grid-cols-3 gap-4 pt-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted">
                 <ShieldCheck className="h-5 w-5" />
                 <span>100% Original</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted">
                 <Truck className="h-5 w-5" />
                 <span>Gratis Ongkir*</span>
               </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-muted">
                 <RotateCcw className="h-5 w-5" />
                 <span>Tukar 7 Hari</span>
               </div>
@@ -263,28 +282,43 @@ export function DesktopProductDetail({ product }: DesktopProductDetailProps) {
         </div>
 
         {/* Tabs: Description, Specs, Reviews */}
-        <div className="mt-12">
+        <div className="mt-16">
           <Tabs defaultValue="description">
-            <TabsList>
-              <TabsTrigger value="description">Deskripsi</TabsTrigger>
-              <TabsTrigger value="specs">Spesifikasi</TabsTrigger>
-              <TabsTrigger value="reviews">Ulasan ({product.reviewCount})</TabsTrigger>
+            <TabsList className="border-b border-hairline bg-transparent rounded-none h-auto p-0">
+              <TabsTrigger 
+                value="description" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-ink data-[state=active]:bg-transparent data-[state=active]:text-ink data-[state=active]:shadow-none px-4 py-3 text-muted"
+              >
+                Deskripsi
+              </TabsTrigger>
+              <TabsTrigger 
+                value="specs" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-ink data-[state=active]:bg-transparent data-[state=active]:text-ink data-[state=active]:shadow-none px-4 py-3 text-muted"
+              >
+                Spesifikasi
+              </TabsTrigger>
+              <TabsTrigger 
+                value="reviews" 
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-ink data-[state=active]:bg-transparent data-[state=active]:text-ink data-[state=active]:shadow-none px-4 py-3 text-muted"
+              >
+                Ulasan ({product.reviewCount})
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="description" className="mt-6">
-              <p className="text-muted-foreground max-w-2xl">{product.description}</p>
+              <p className="text-body max-w-2xl leading-relaxed">{product.description}</p>
             </TabsContent>
             <TabsContent value="specs" className="mt-6">
-              <div className="max-w-md space-y-3">
+              <div className="max-w-md space-y-1">
                 {product.specs.map((spec, i) => (
-                  <div key={i} className="flex justify-between py-2 border-b">
-                    <span className="text-muted-foreground">{spec.label}</span>
-                    <span className="font-medium">{spec.value}</span>
+                  <div key={i} className="flex justify-between py-3 border-b border-hairline">
+                    <span className="text-muted">{spec.label}</span>
+                    <span className="font-medium text-ink">{spec.value}</span>
                   </div>
                 ))}
               </div>
             </TabsContent>
             <TabsContent value="reviews" className="mt-6">
-              <p className="text-muted-foreground">Belum ada ulasan untuk produk ini.</p>
+              <p className="text-muted">Belum ada ulasan untuk produk ini.</p>
             </TabsContent>
           </Tabs>
         </div>

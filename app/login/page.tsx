@@ -23,8 +23,8 @@ function LoginContent() {
 
   if (sent) {
     return (
-      <div className={`${isDesktop ? "min-h-[60vh] flex items-center justify-center" : "px-4 py-16"}`}>
-        <div className={`text-center ${isDesktop ? "max-w-md" : ""}`}>
+      <div className="min-h-[60vh] flex items-center justify-center px-4 py-16">
+        <div className="text-center max-w-md">
           <div className="h-16 w-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="h-8 w-8 text-green-600" />
           </div>
@@ -45,10 +45,10 @@ function LoginContent() {
   }
 
   return (
-    <div className={`${isDesktop ? "min-h-[60vh] flex items-center justify-center" : "px-4 py-8"}`}>
-      <div className={`w-full ${isDesktop ? "max-w-md" : ""}`}>
+    <div className="min-h-[60vh] flex items-center justify-center px-4 py-8 md:py-16">
+      <div className="w-full md:w-auto md:min-w-[448px] max-w-md mx-auto">
         <div className="text-center mb-8">
-          <h1 className={`font-bold ${isDesktop ? "text-3xl" : "text-2xl"} mb-2`}>
+          <h1 className="font-bold text-2xl md:text-3xl mb-2">
             Masuk ke SoraStore
           </h1>
           <p className="text-muted-foreground">
@@ -56,7 +56,7 @@ function LoginContent() {
           </p>
         </div>
 
-        <div className={`${isDesktop ? "border rounded-2xl p-8" : ""}`}>
+        <div className="md:border md:border-hairline md:rounded-2xl md:p-8 md:shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label className="text-sm font-medium">Email</label>
@@ -81,7 +81,7 @@ function LoginContent() {
 
           <div className="relative my-6">
             <Separator />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
+            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-2 text-xs text-muted-foreground">
               atau
             </span>
           </div>
@@ -112,7 +112,7 @@ function LoginContent() {
 
         <p className="text-center text-sm text-muted-foreground mt-6">
           Belum punya akun?{" "}
-          <span className="text-primary">
+          <span className="text-primary font-medium">
             Tidak perlu daftar! Langsung belanja sebagai guest.
           </span>
         </p>

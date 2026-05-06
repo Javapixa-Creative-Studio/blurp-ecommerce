@@ -1,6 +1,5 @@
 "use client";
 
-import { useIsDesktop } from "@/src/hooks";
 import { DesktopShell } from "@/src/components/desktop";
 import { MobileShell } from "@/src/components/mobile";
 
@@ -19,26 +18,19 @@ export function StorefrontLayout({
   mobileTitle,
   hideMobileTabBar,
 }: StorefrontLayoutProps) {
-  const isDesktop = useIsDesktop();
-
-  if (desktopContent && mobileContent) {
-    if (isDesktop) {
-      return <DesktopShell>{desktopContent}</DesktopShell>;
-    }
-    return (
-      <MobileShell title={mobileTitle} hideTabBar={hideMobileTabBar}>
-        {mobileContent}
-      </MobileShell>
-    );
-  }
-
-  if (isDesktop) {
-    return <DesktopShell>{children}</DesktopShell>;
-  }
+  const desktopNode = desktopContent && mobileContent ? desktopContent : children;
+  const mobileNode = desktopContent && mobileContent ? mobileContent : children;
 
   return (
-    <MobileShell title={mobileTitle} hideTabBar={hideMobileTabBar}>
-      {children}
-    </MobileShell>
+    <>
+      <div className="hidden md:block">
+        <DesktopShell>{desktopNode}</DesktopShell>
+      </div>
+      <div className="md:hidden">
+        <MobileShell title={mobileTitle} hideTabBar={hideMobileTabBar}>
+          {mobileNode}
+        </MobileShell>
+      </div>
+    </>
   );
 }

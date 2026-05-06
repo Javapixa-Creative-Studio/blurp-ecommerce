@@ -1,39 +1,194 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: oklch(0.98 0.01 75);
-  --color-foreground: oklch(0.15 0 0);
-  --color-card: oklch(1 0 0);
-  --color-card-foreground: oklch(0.15 0 0);
-  --color-popover: oklch(1 0 0);
-  --color-popover-foreground: oklch(0.15 0 0);
-  --color-primary: oklch(0.15 0 0);
-  --color-primary-foreground: oklch(0.98 0.01 75);
-  --color-secondary: oklch(0.96 0.01 75);
-  --color-secondary-foreground: oklch(0.15 0 0);
-  --color-muted: oklch(0.92 0.01 75);
-  --color-muted-foreground: oklch(0.45 0 0);
-  --color-accent: oklch(0.73 0.08 75);
-  --color-accent-foreground: oklch(0.15 0 0);
-  --color-destructive: oklch(0.55 0.22 25);
-  --color-destructive-foreground: oklch(1 0 0);
-  --color-border: oklch(0.90 0.01 75);
-  --color-input: oklch(0.90 0.01 75);
-  --color-ring: oklch(0.73 0.08 75);
-  
-  --color-gold: oklch(0.73 0.08 75);
-  --color-gold-light: oklch(0.95 0.03 75);
-  --color-cream: oklch(0.98 0.01 75);
-  --color-cream-dark: oklch(0.96 0.01 75);
-  
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.5rem;
+  /* Colors - Airbnb Rausch */
+  --color-primary: #ff385c;
+  --color-primary-active: #e00b41;
+  --color-primary-disabled: #ffd1da;
+  --color-primary-error-text: #c13515;
+  --color-primary-error-text-hover: #b32505;
+  --color-luxe: #460479;
+  --color-plus: #92174d;
+  --color-ink: #222222;
+  --color-body: #3f3f3f;
+  --color-muted: #6a6a6a;
+  --color-muted-soft: #929292;
+  --color-hairline: #dddddd;
+  --color-hairline-soft: #ebebeb;
+  --color-border-strong: #c1c1c1;
+  --color-canvas: #ffffff;
+  --color-surface-soft: #f7f7f7;
+  --color-surface-card: #ffffff;
+  --color-surface-strong: #f2f2f2;
+  --color-on-primary: #ffffff;
+  --color-on-dark: #ffffff;
+  --color-legal-link: #428bff;
+  --color-star-rating: #222222;
+  --color-scrim: #000000;
+
+  /* Surface colors mapped to Tailwind */
+  --color-background: var(--color-canvas);
+  --color-foreground: var(--color-ink);
+  --color-card: var(--color-surface-card);
+  --color-card-foreground: var(--color-ink);
+  --color-popover: var(--color-canvas);
+  --color-popover-foreground: var(--color-ink);
+  --color-secondary: var(--color-surface-soft);
+  --color-secondary-foreground: var(--color-ink);
+  --color-muted-foreground: var(--color-muted);
+  --color-accent: var(--color-primary);
+  --color-accent-foreground: var(--color-on-primary);
+  --color-destructive: var(--color-primary-error-text);
+  --color-destructive-foreground: var(--color-on-primary);
+  --color-border: var(--color-hairline);
+  --color-input: var(--color-hairline);
+  --color-ring: var(--color-primary);
+
+  /* Airbnb Rounded */
+  --radius-none: 0px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
+
+  /* Airbnb Spacing */
+  --spacing-xxs: 2px;
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-base: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  --spacing-section: 64px;
 }
 
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Airbnb Typography */
+.font-display-xl { font-size: 28px; font-weight: 700; line-height: 1.43; letter-spacing: 0; }
+.font-display-lg { font-size: 22px; font-weight: 500; line-height: 1.18; letter-spacing: -0.44px; }
+.font-display-md { font-size: 21px; font-weight: 700; line-height: 1.43; letter-spacing: 0; }
+.font-display-sm { font-size: 20px; font-weight: 600; line-height: 1.20; letter-spacing: -0.18px; }
+.font-title-md { font-size: 16px; font-weight: 600; line-height: 1.25; letter-spacing: 0; }
+.font-title-sm { font-size: 16px; font-weight: 500; line-height: 1.25; letter-spacing: 0; }
+.font-body-md { font-size: 16px; font-weight: 400; line-height: 1.5; letter-spacing: 0; }
+.font-body-sm { font-size: 14px; font-weight: 400; line-height: 1.43; letter-spacing: 0; }
+.font-caption { font-size: 14px; font-weight: 500; line-height: 1.29; letter-spacing: 0; }
+.font-caption-sm { font-size: 13px; font-weight: 400; line-height: 1.23; letter-spacing: 0; }
+.font-badge { font-size: 11px; font-weight: 600; line-height: 1.18; letter-spacing: 0; }
+.font-micro-label { font-size: 12px; font-weight: 700; line-height: 1.33; letter-spacing: 0; }
+.font-uppercase-tag { font-size: 8px; font-weight: 700; line-height: 1.25; letter-spacing: 0.32px; text-transform: uppercase; }
+.font-button-md { font-size: 16px; font-weight: 500; line-height: 1.25; letter-spacing: 0; }
+.font-button-sm { font-size: 14px; font-weight: 500; line-height: 1.29; letter-spacing: 0; }
+.font-nav-link { font-size: 16px; font-weight: 600; line-height: 1.25; letter-spacing: 0; }
+
+/* Airbnb Shadows */
+.shadow-card-hover {
+  box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
+}
+
+/* Airbnb Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+.animate-slide-up { animation: slideUp 0.6s ease-out forwards; }
+.animate-scale-in { animation: scaleIn 0.4s ease-out forwards; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-pulse-soft { animation: pulse-soft 2s ease-in-out infinite; }
+.animate-float-soft { animation: float 5s ease-in-out infinite; }
+
+/* Cosmetics-friendly reveal */
+@keyframes revealUp {
+  from { opacity: 0; transform: translateY(14px); filter: blur(2px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+.animate-reveal-up { animation: revealUp 0.65s ease-out forwards; }
+
+/* Staggered animations */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+.stagger-6 { animation-delay: 0.6s; }
+
+/* Hover transitions */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: rgba(0, 0, 0, 0.02) 0 0 0 1px, rgba(0, 0, 0, 0.04) 0 2px 6px 0, rgba(0, 0, 0, 0.1) 0 4px 8px 0;
+}
+
+/* Smooth scrolling */
+html { scroll-behavior: smooth; }
+
+/* Hide scrollbar but allow scroll */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Product card image hover zoom */
+.product-image {
+  transition: transform 0.5s ease;
+}
+.group:hover .product-image {
+  transform: scale(1.05);
+}
+
+/* Smooth image loading (do NOT key off the `loading` attribute) */
+img {
+  transition: opacity 0.35s ease;
+}
+.img-fade {
+  opacity: 0;
+}
+.img-fade[data-loaded="true"] {
+  opacity: 1;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-surface-soft);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-hairline);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
 }

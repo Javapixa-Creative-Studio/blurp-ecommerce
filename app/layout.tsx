@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+import { ScrollToTopOnNavigate } from "@/src/components/shared/scroll-to-top";
 
 export const metadata: Metadata = {
   title: "SoraStore - Belanja cepat, tanpa daftar",
   description: "Toko online Indonesia - belanja cepat tanpa ribet daftar",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -18,8 +18,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${inter.variable}`}>
-      <body className="min-h-screen font-sans">{children}</body>
+    <html lang="id">
+      <body className="min-h-screen antialiased">
+        <ScrollToTopOnNavigate />
+        {children}
+      </body>
     </html>
   );
 }

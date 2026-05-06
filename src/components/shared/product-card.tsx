@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { Heart } from "lucide-react";
+import { Heart, Star } from "lucide-react";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-import { Card, CardContent } from "@/src/components/ui/card";
+import { Card } from "@/src/components/ui/card";
 import { Product } from "@/src/data/products";
+import { SafeImage } from "@/src/components/shared/safe-image";
 import { cn, formatPrice, calculateDiscount } from "@/src/lib/utils";
+import { useState } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -12,45 +14,81 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className }: ProductCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
   const discount = product.originalPrice
     ? calculateDiscount(product.originalPrice, product.price)
     : null;
 
-  return (
-    <Card className={cn("group overflow-hidden border-border/50 hover:border-border hover:shadow-md transition-all duration-300", className)}>
-      <Link href={`/store/product/${product.slug}`}>
-        <div className="relative aspect-square bg-secondary overflow-hidden">
-          <div className="absolute inset-0 flex items-center justify-center text-muted-foreground text-sm">
-            {product.name}
-          </div>
-          
-          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-            {product.isNew && (
-              <Badge className="bg-primary text-primary-foreground">BARU</Badge>
-            )}
-            {discount && (
-              <Badge variant="destructive">-{discount}%</Badge>
-            )}
-          </div>
+  // Use product's own image or picsum fallback
+  const productImage = product.images?.[0] || `https://picsum.photos/seed/${product.slug}/600/600`;
 
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white/80 hover:bg-white"
+  return (
+    <Card 
+      className={cn(
+        "group overflow-hidden border-0 shadow-none transition-all duration-300",
+        "hover-lift rounded-md",
+        className
+      )}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <Link href={`/store/product/${product.slug}`}>
+        <div className="relative aspect-square overflow-hidden rounded-md bg-surface-soft">
+          <SafeImage
+            src={productImage}
+            alt={product.name}
+            className="w-full h-full object-cover product-image"
+            loading="lazy"
+            fallbackSrcs={[
+              `https://picsum.photos/seed/${product.slug}-fallback/600/600`,
+              "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?w=1200&h=1200&fit=crop&q=80",
+            ]}
+          />
+          
+          {/* Wishlist Button - Airbnb Style */}
+          <button 
+            className={cn(
+              "absolute top-3 right-3 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300",
+              "bg-white/80 hover:bg-white hover:scale-110",
+              isWishlisted ? "text-primary" : "text-ink/60 hover:text-ink"
+            )}
             onClick={(e) => {
               e.preventDefault();
+              setIsWishlisted(!isWishlisted);
             }}
+            aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
           >
-            <Heart className="h-4 w-4" />
-          </Button>
+            <Heart className={cn("w-5 h-5", isWishlisted && "fill-primary")} />
+          </button>
 
-          <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+          {/* Badges - Top Left */}
+          <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+            {product.isNew && (
+              <Badge className="bg-white text-ink text-[10px] font-bold uppercase tracking-wide shadow-sm">
+                BARU
+              </Badge>
+            )}
+            {discount && (
+              <Badge className="bg-primary text-white text-[10px] font-bold uppercase tracking-wide">
+                -{discount}%
+              </Badge>
+            )}
+          </div>
+
+          {/* Quick Add on Hover - Airbnb Style */}
+          <div className={cn(
+            "absolute bottom-0 left-0 right-0 p-3 transition-all duration-300",
+            isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )}>
             <Button
               variant="secondary"
               size="sm"
-              className="w-full"
+              className="w-full bg-white text-ink font-semibold hover:bg-white/90 shadow-md"
               onClick={(e) => {
                 e.preventDefault();
+                // Add to cart logic
               }}
             >
               + Keranjang
@@ -59,31 +97,36 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
       </Link>
 
-      <CardContent className="p-4">
+      <div className="p-3">
+        {/* Category */}
+        <p className="text-xs text-muted uppercase tracking-wide mb-1">{product.category}</p>
+        
+        {/* Title */}
         <Link href={`/store/product/${product.slug}`}>
-          <p className="text-xs text-muted-foreground mb-1">{product.category}</p>
-          <h3 className="font-medium text-sm leading-tight line-clamp-2 group-hover:text-primary/80 transition-colors">
+          <h3 className="font-medium text-sm leading-tight text-ink line-clamp-2 group-hover:text-primary transition-colors">
             {product.name}
           </h3>
-          
-          <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-            <span className="text-amber-500">★</span>
-            <span>{product.rating}</span>
-            <span>({product.reviewCount})</span>
-          </div>
-
-          <div className="flex items-baseline gap-2 mt-2">
-            <span className="font-semibold text-base">
-              {formatPrice(product.price)}
-            </span>
-            {product.originalPrice && (
-              <span className="text-sm text-muted-foreground line-through">
-                {formatPrice(product.originalPrice)}
-              </span>
-            )}
-          </div>
         </Link>
-      </CardContent>
+        
+        {/* Rating - Airbnb Style */}
+        <div className="flex items-center gap-1.5 mt-2">
+          <Star className="w-3.5 h-3.5 text-star-rating fill-star-rating" />
+          <span className="text-sm font-medium text-ink">{product.rating}</span>
+          <span className="text-sm text-muted">({product.reviewCount})</span>
+        </div>
+
+        {/* Price */}
+        <div className="flex items-baseline gap-2 mt-2">
+          <span className="text-base font-semibold text-ink">
+            {formatPrice(product.price)}
+          </span>
+          {product.originalPrice && (
+            <span className="text-sm text-muted line-through">
+              {formatPrice(product.originalPrice)}
+            </span>
+          )}
+        </div>
+      </div>
     </Card>
   );
 }
