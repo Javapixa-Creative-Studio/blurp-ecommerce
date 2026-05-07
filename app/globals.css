@@ -53,16 +53,6 @@
   --radius-xl: 32px;
   --radius-full: 9999px;
 
-  /* Airbnb Spacing */
-  --spacing-xxs: 2px;
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-base: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  --spacing-xxl: 48px;
-  --spacing-section: 64px;
 }
 
 body {
